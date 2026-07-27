@@ -1,0 +1,116 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        timeout(time: 4, unit: 'HOURS')
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+        cron('0 2 * * *')  // Nightly build at 2 AM
+    }
+
+    environment {
+        DEPOT_TOOLS = "${env.WORKSPACE}/depot_tools"
+        AMNESIA_SRC = "${env.WORKSPACE}/AmnesiaBrowser"
+        BUILD_DIR = "${env.AMNESIA_SRC}/out/Default"
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    // Install depot_tools
+                    sh '''
+                        if [ ! -d "$DEPOT_TOOLS" ]; then
+                            git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git $DEPOT_TOOLS
+                        fi
+                    '''
+                    env.PATH = "$DEPOT_TOOLS:$env.PATH"
+                }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Configure') {
+            steps {
+                script {
+                    dir("$AMNESIA_SRC") {
+                        sh '''
+                            mkdir -p out/Default
+                            gn gen out/Default --args="$(cat build_configs/linux/args.gn)"
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Build Linux') {
+            steps {
+                script {
+                    dir("$AMNESIA_SRC") {
+                        sh "autoninja -C out/Default amnesia_browser"
+                    }
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                script {
+                    dir("$AMNESIA_SRC") {
+                        sh "./out/Default/amnesia_browser_unittests --gtest_filter='*'"
+                    }
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                script {
+                    dir("$AMNESIA_SRC") {
+                        sh "./out/Default/amnesia_browser_integration_tests"
+                    }
+                }
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'out/Default/amnesia_browser*', fingerprint: true
+                archiveArtifacts artifacts: 'out/Default/*.deb', fingerprint: true
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    // Placeholder for deployment logic
+                    echo "Deploying to production..."
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        failure {
+            emailext (
+                subject: "FAILED: Amnesia Browser Build #${env.BUILD_NUMBER}",
+                body: "Build ${env.BUILD_URL} failed",
+                to: "dev-team@amnesia-browser.org"
+            )
+        }
+    }
+}
