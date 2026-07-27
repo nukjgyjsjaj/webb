@@ -1,4 +1,6 @@
-# ملاحظات داخلية شاملة - الورقات البحثية الثلاث
+# ملاحظات داخلية شاملة كاملة - الورقات البحثية الثلاث
+
+---
 
 ## الورقة 1: تصميم متصفح ويب مقاوم للبصمة الرقمية بآلية إعادة ضبط ذاتية كاملة
 
@@ -7,7 +9,7 @@
 - تعديلات على مستوى كود C++ المصدر
 - غير قابل للكشف مقارنة بإضافات JavaScript
 
-### 171 إشارة رقمية مفصلة
+### 171 إشارة رقمية مفصلة كاملة
 
 #### 3.1 معلومات الجهاز ونظام التشغيل (6 إشارات)
 1. Device Type / Model - navigator.userAgent، Sec-CH-UA-Model - عالي
@@ -89,7 +91,7 @@
 128. Color Depth - screen.colorDepth - متوسط
 129-131. Browser Window Size (Outer، Inner، Full Screen) - window object - عالي
 132-133. Browser Build Number / Identifier - تحليل الإصدار - متوسط
-134. Page Scroll Position - window.scrollY - منخفض
+134-135. Page Scroll Position - window.scrollY - منخفض
 
 #### 3.11 التخزين والتفاعل (15 إشارة)
 136-138. IndexedDB، Local Storage، Session Storage - كشف التوافق - متوسط
@@ -105,15 +107,41 @@
 163-166. Sensors (4 إشارات: accelerometer, gyroscope, magnetometer, ambient light) - Sensor APIs - عالي
 167-171. WebCodecs، SharedArrayBuffer، Cross-Origin Isolation، User Activation Heuristics، TLS Fingerprinting - متنوعة - عالي
 
-### الهندسة المعمارية المقترحة
+### الهندسة المعمارية المقترحة (الطبقات)
 ```
-طبقة إدارة الجلسة (Session)
-    ↓
-محرك التعديل على مستوى C++
-    ↓
-محرك التخزين المؤقت للجلسة
-    ↓
-منظومة التنظيف (Cleanup)
+┌─────────────────────────────────────────────────────┐
+│                  المتصفح المقترح                      │
+├─────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────┐    │
+│  │         طبقة إدارة الجلسة (Session)          │    │
+│  │  - إنشاء معرف جلسة فريد                      │    │
+│  │  - توليد البصمة الرقمية                      │    │
+│  │  - تنسيق جميع الإشارات                       │    │
+│  └─────────────────────────────────────────────┘    │
+│                         │                            │
+│  ┌─────────────────────────────────────────────┐    │
+│  │      محرك التعديل على مستوى C++              │    │
+│  │  - Canvas: تعديل مخرجات toDataURL()         │    │
+│  │  - WebGL: تعديل معلومات المُنشئ والمُصدر     │    │
+│  │  - AudioContext: تعديل مخرجات المعالجة      │    │
+│  │  - Navigator: تعديل جميع الخصائص            │    │
+│  │  - Screen: تعديل الأبعاد والدقة              │    │
+│  │  - HTTP Headers: تعديل الرؤوس المرسلة        │    │
+│  └─────────────────────────────────────────────┘    │
+│                         │                            │
+│  ┌─────────────────────────────────────────────┐    │
+│  │      محرك التخزين المؤقت للجلسة              │    │
+│  │  - تخزين الكوكيز المؤقتة                    │    │
+│  │  - تخزين محلي مؤقت                          │    │
+│  │  - تخزين الجلسة المؤقت                      │    │
+│  └─────────────────────────────────────────────┘    │
+│                         │                            │
+│  ┌─────────────────────────────────────────────┐    │
+│  │         منظومة التنظيف (Cleanup)             │    │
+│  │  - حذف جميع البيانات عند الإغلاق             │    │
+│  │  - مسح جميع آثار الجلسة                      │    │
+│  └─────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────┘
 ```
 
 ### آلية توليد البصمة المتسقة
@@ -122,32 +150,85 @@
 - قيم ضمن النطاق الطبيعي للإشارة
 - مشاريع مرجعية: Helium (Helium Noise)، ContainSite
 
-### التعديلات على مستوى C++ المطلوبة
-1. third_party/blink/renderer/modules/canvas/ HTMLCanvasElement::toDataURL
-2. third_party/blink/renderer/modules/webgl/ WEBGL_debug_renderer_info
-3. third_party/blink/renderer/modules/webaudio/ AudioContext processing
-4. third_party/blink/renderer/core/frame/navigator.cc - جميع خصائص Navigator
-5. third_party/blink/renderer/core/frame/local_dom_window.cc - Screen و Window
-6. net/http/http_util.cc - تعديل رؤوس HTTP المرسلة
-7. components/network_session_configurator/ - تعديل إعدادات TLS
+### التعديلات على مستوى C++ المطلوبة (7 ملفات/مسارات)
+1. `third_party/blink/renderer/modules/canvas/` - تعديل دوال الرسم لإضافة تشويش
+2. `third_party/blink/renderer/modules/webgl/` - تعديل معلومات WebGL
+3. `third_party/blink/renderer/modules/webaudio/` - تعديل مخرجات AudioContext
+4. `third_party/blink/renderer/core/frame/navigator.cc` - تعديل جميع خصائص Navigator
+5. `third_party/blink/renderer/core/frame/local_dom_window.cc` - تعديل Screen و Window
+6. `net/http/http_util.cc` - تعديل رؤوس HTTP المرسلة
+7. `components/network_session_configurator/` - تعديل إعدادات TLS
 
-### آليات الحماية لكل فئة
+### كود مثال Canvas (HTMLCanvasElement::toDataURL)
+```cpp
+String HTMLCanvasElement::toDataURL(const String& mime_type,
+                                    const ScriptValue& quality,
+                                    ExceptionState& exception_state) {
+    String original_result = original_toDataURL(mime_type, quality, exception_state);
+    if (ShouldResistFingerprinting()) {
+        uint64_t session_seed = GetCurrentSessionSeed();
+        return ApplyConsistentNoise(original_result, session_seed);
+    }
+    return original_result;
+}
+```
+
+### آليات الحماية لكل فئة (من الجدول 6.1-6.10)
 - Device/OS: تزييف UA، Sec-CH-UA، Platform
 - Network: إخفاء IP (Tor/VPN)، منع تسرب WebRTC، تزييف Geolocation
 - Timezone: توحيد المنطقة الزمنية (UTC)
 - Canvas: تشويش متناسق (Pixel Permutation)
-- AudioContext: تشويش متناسق، توحيد المنصة
+- AudioContext: تشويج متناسق، توحيد المنصة
 - WebGL/WebGPU: تزييف WEBGL_debug_renderer_info، WebGPU adapter info
 - Fonts: تزييف قائمة الخطوط، توحيد measureText()
 - Peripherals: تعطيل WebUSB/WebBluetooth/WebMIDI
 - Performance: تشويش التوقيت، توحيد المقاييس
 - Storage: حذف الكوكيز عند الإغلاق، مسح LocalStorage/SessionStorage/Cache/IndexedDB
 
-### مكونات إعادة الضبط
+### مكونات إعادة الضبط الأربعة
 1. مدير الجلسة (Session Manager)
 2. مولد البصمة (Fingerprint Generator)
 3. مدير التخزين المؤقت (Ephemeral Storage Manager)
 4. منظومة التنظيف (Cleanup System)
+
+### جدول المقارنة مع المتصفحات الحالية
+| الميزة | Tor Browser | Brave | Firefox (RFP) | المتصفح المقترح |
+|---|---|---|---|---|
+| توحيد البصمة | ✅ | ❌ | ✅ | ✅ |
+| إعادة ضبط كامل عند الإغلاق | ✅ | ❌ | ❌ | ✅ |
+| تعديل على مستوى C++ | ✅ جزئياً | ❌ | ❌ | ✅ |
+| توليد بصمة جديدة لكل جلسة | ❌ (ثابتة) | ❌ (عشوائية) | ❌ (ثابتة) | ✅ |
+| تناسق الإشارات داخل الجلسة | ✅ | ❌ | ✅ | ✅ |
+| حماية WebUSB/WebBluetooth | ✅ | ❌ | ❌ | ✅ |
+| سرعة التصفح | منخفضة | عالية | عالية | عالية |
+| توافق المواقع | محدود | كامل | كامل | كامل |
+
+### هيكل Fingerprint Generator المقترح
+```cpp
+struct Fingerprint {
+    uint64_t session_id;
+    std::string user_agent;
+    std::string platform;
+    std::string timezone;
+    int screen_width;
+    int screen_height;
+    int hardware_concurrency;
+    // ... 170+ حقل آخر
+};
+
+class FingerprintGenerator {
+public:
+    Fingerprint Generate(uint64_t session_seed) {
+        Fingerprint fp;
+        std::mt19937_64 rng(session_seed);
+        fp.user_agent = GenerateUserAgent(rng);
+        fp.platform = GeneratePlatform(rng);
+        fp.timezone = GenerateTimezone(rng);
+        // ... توليد جميع القيم
+        return fp;
+    }
+};
+```
 
 ### خطة التطوير (24 شهر)
 - المرحلة 1 (3-6 شهر): Fork من Chromium، مدير الجلسة، 50 إشارة
@@ -155,55 +236,161 @@
 - المرحلة 3 (12-18 شهر): تحسين الأداء، Tor/VPN مدمج، UI
 - المرحلة 4 (18-24 شهر): إصدار مستقر
 
+### نقاط الضعف المتبقية
+- عنوان IP: يحتاج Tor/VPN خارجي
+- السلوك البشري: أنماط الكتابة والتفاعل
+- شهادات TLS: قد تُستخدم كإشارة بصمة
+
+---
+
 ## الورقة 2: حلول متكاملة للنقاط المتبقية في مقاومة البصمة الرقمية
 
-### المشكلة الجوهرية
-- عنوان IP هو الرابط الوحيد الذي يربط الجلسة
-- بصمة TLS تُكشف قبل التشفير
-- لا يمكن تغييرها بسهولة من داخل المتصفح
+### عنوان IP - المشكلة
+- الرابط الوحيد الذي يربط الجلسة
+- يمكن استخدامه لربط الجلسات حتى مع تغيير جميع الإشارات الأخرى
 
 ### الحل: VLESS + Xray-core
 - بروتوكول VLESS خفيف الوزن
 - دمج Xray-core كعميل مدمج
-- سحب روابط من GitHub:
-  - vless-proxy-list (كل 4 ساعات)
-  - Proxy-List (كل ساعة)
-  - FreeProxyList (كل 10 دقائق)
-  - Vless Collector (مستمر)
-  - Freedom-V2Ray (كل ساعتين)
 
-### آلية دوران الروابط
-1. سحب القائمة كل 15 دقيقة
-2. اختبار 3-5 روابط للصلاحية
-3. اختيار عشوائي من الصالحة
-4. تبديل تلقائي عند الفشل
+### 5 مصادر روابط VLESS مع ترددات التحديث
+1. vless-proxy-list: كل 4 ساعات - روابط vless:// عاملة
+2. Proxy-List: كل ساعة - قوائم شاملة لـ VLESS وVMess وTrojan
+3. FreeProxyList: كل 10 دقائق - تحديث تلقائي باستخدام GitHub Actions
+4. Vless Collector: مستمر - يجمع ويفلتر الروابط من مصادر متعددة
+5. Freedom-V2Ray: كل ساعتين - روابط VLESS وVMess وTrojan وReality
+
+### مثال رابط VLESS الكامل
+```
+vless://b777f69f-268a-4cea-8d4b-c369349c6b0a@fr1.connectsuite.org:443?type=ws&encryption=none&security=tls&path=%2fcdn-cgi%2fws#vless-ws-tls
+```
+يتضمن: UUID, الخادم/المنفذ, نوع النقل (ws/tcp/reality), إعدادات الأمان (TLS/Reality/none)
+
+### آلية التحديث والدوران (من القسم 2.5)
+1. عند بدء التشغيل: سحب قائمة، اختبار 3-5 روابط، اختيار عشوائي من الصالحة
+2. أثناء التصفح: تبديل تلقائي عند الفشل, تغيير يدوي بنقرة واحدة
+3. عند الإغلاق: حذف الرابط من الذاكرة، جلسة جديدة = رابط جديد
+4. تكامل مع إعادة الضبط: IP جديد، موقع جغرافي جديد، ISP جديد
+
+### كود VlessManager الكامل (من القسم 2.6)
+```cpp
+class VlessManager {
+public:
+    bool Initialize() {
+        std::string proxy_list = FetchProxyList("https://raw.githubusercontent.com/26info/vless-proxy-list/main/working-proxies.txt");
+        ParseVlessLinks(proxy_list);
+        ValidateLinks();
+        return true;
+    }
+    
+    std::string GetActiveLink() {
+        if (current_link_.empty() || !IsLinkValid(current_link_)) {
+            RotateLink();
+        }
+        return current_link_;
+    }
+    
+    void RotateLink() {
+        current_link_ = SelectRandomValidLink();
+        RestartXrayClient(current_link_);
+    }
+    
+private:
+    std::string current_link_;
+    std::vector<std::string> valid_links_;
+    std::chrono::steady_clock::time_point last_update_;
+};
+```
 
 ### بصمة TLS المشكلة
 - ClientHello يُرسل في نص واضح
-- JA3: 32 حرفاً (2017-2021)
-- JA4: الجيل التالي (2023-2026) - يعتمد على Cloudflare/Akamai/AWS
+- يحتوي على: TLS version, Cipher Suites, Extensions, Elliptic Curves
+- JA3 (2017-2021): تجزئة 32 حرفاً - مبتكرون: John Althouse, Jeff Atkinson, Josh Atkins
+- JA4 (2023-2026): الجيل التالي - معيار في Cloudflare/Akamai/AWS - يتجاهل ترتيب الإضافات
 
-### الحل: uTLS
-- Fork من crypto/tls في Go
-- أنماط التزوير:
-  - HelloChrome_Auto (تقليد Chrome)
-  - HelloRandomized (بصمة عشوائية)
-  - إعادة استخدام بصمة ناجحة
-- mTLS Roller: تجرب بصمات مختلفة حتى تعمل
+### الأدوات المتاحة (الجدول 4.2)
+| الأداة | اللغة | الوظيفة |
+| uTLS | Go | تعديل ClientHello لتقليد أي متصفح |
+| TLS-Chameleon | Python | تزوير TLS مع 45+ ملف تعريف متصفح |
+| JA3Cloak | Go/C# | إنشاء بصمات JA3 مزيّفة |
+| curl-impersonate | Python/C | تقليد TLS لمتصفحات حقيقية |
 
-### أدوات أخرى
-- TLS-Chameleon (Python): 45+ ملف تعريف
-- JA3Cloak (Go/C#)
-- curl-impersonate (Python/C)
+### أنماط التزوير في uTLS (4.3.1)
+1. **التقليد (Parroting):** `tls.UClient(tcpConn, &config, tls.HelloChrome_Auto)`
+2. **البصمة العشوائية:** `tls.UClient(tcpConn, &config, tls.HelloRandomized)`
+3. **إعادة استخدام بصمة ناجحة:** `tls.UClient(tcpConn, &config, oldConn.ClientHelloID)`
 
-### تكامل مع مدير الجلسة
-- بصمة TLS مرتبطة بمعرف الجلسة
-- تتغير مع كل جلسة
-- متناسقة داخل الجلسة الواحدة
+### ميزة utls.Roller (4.3.2)
+- تجرب بصمات مختلفة حتى تجد واحدة تعمل
+- تعيد استخدام البصمة الناجحة تلقائياً
+- تُجنب التغيير المستمر للبصمات
 
-### CVE معروف
+### TLS-Chameleon (4.4)
+- 45+ ملف تعريف متصفح: Chrome, Firefox, Safari, Edge عبر Windows/macOS/Linux/iOS/Android
+- توزيع عشوائي للبصمة: اختلافات طفيفة لتجنب اكتشاف الأنماط
+- محاكاة HTTP/2: إعدادات خاصة بكل متصفح
+- نظام تحديث تلقائي: سحب أحدث بصمات JA3
+
+### TLSManager الكامل (4.5)
+```cpp
+class TLSManager {
+public:
+    bool Initialize() {
+        LoadBrowserProfiles();
+        return true;
+    }
+    
+    bool ConfigureConnection(Connection* conn, SessionData* session) {
+        BrowserProfile profile = SelectRandomProfile(session->GetSeed());
+        conn->SetTLSVersion(profile.tls_version);
+        conn->SetCipherSuites(profile.cipher_suites);
+        conn->SetExtensions(profile.extensions);
+        conn->SetEllipticCurves(profile.curves);
+        conn->SetHTTP2Settings(profile.http2_settings);
+        return true;
+    }
+    
+private:
+    struct BrowserProfile {
+        std::string name;
+        std::vector<uint16_t> tls_versions;
+        std::vector<uint16_t> cipher_suites;
+        std::vector<uint16_t> extensions;
+        std::vector<uint16_t> curves;
+        std::map<uint16_t, uint32_t> http2_settings;
+    };
+    std::vector<BrowserProfile> profiles_;
+};
+```
+
+### CVE المعروف
 - CVE-2026-27017: عدم تطابق في اختيار مجموعات التشفير عند استخدام GREASE ECH مع Chrome
 - الحل: استخدام uTLS 1.8.1+
+
+### متطلبات تنفيذ Xray-core (6.1)
+- نسخة معدّلة من Xray-core تتواصل مباشرة مع مدير الجلسة
+- واجهة برمجة تطبيقات داخلية (وليس سطر أوامر)
+- دمج في الملف التنفيذي (بدون ملفات خارجية)
+
+### دورة حياة الجلسة الكاملة (5.1)
+1. توليد معرف جلسة فريد (128-bit)
+2. سحب قائمة روابط VLESS من GitHub (تحديث كل 15 دقيقة)
+3. اختبار صلاحية الروابط واختيار رابط عشوائي
+4. تشغيل عميل Xray-core بالرابط المختار
+5. اختيار ملف تعريف متصفح عشوائي (من 45+ ملف)
+6. تطبيق بصمة TLS الخاصة بملف التعريف على اتصالات HTTPS
+7. توليد جميع الإشارات الأخرى (Canvas، Audio، WebGL، إلخ)
+8. بدء التصفح ببصمة كاملة جديدة ومتناسقة
+
+### التوصيات النهائية
+- اعتماد uTLS كطبقة TLS أساسية للمتصفح: **إلزامي**
+- دمج Xray-core مع مدير الجلسة: **إلزامي**
+- سحب قوائم VLESS من مستودعات متعددة للاحتياط: **موصى به**
+- اختبار صلاحية الروابط قبل الاستخدام: **إلزامي**
+- ربط بصمة TLS بمعرف الجلسة: **إلزامي**
+- تحديث ملفات تعريف المتصفحات باستمرار: **موصى به**
+
+---
 
 ## الورقة 3: آلية التهيئة المسبقة للجلسة (Session Pre-Initialization)
 
@@ -213,9 +400,9 @@
 - تحقق تبادلي من عشرات الإشارات
 
 ### "التناسق الزائف" (Pseudo-Consistency)
-- UA/النواة غير متطابق
-- تسرب العتاد
-- بيئات محمولة مزيّفة
+- عدم تطابق UA/النواة: UA Chrome/Windows لكن TLS يشير لإصدار أقدم
+- تسرب العتاد: UA iOS مع WebGL NVIDIA Windows GPU
+- بيئات محمولة مزيّفة: UA Android 15 مع GPU سطح مكتب وغياب دعم اللمس
 
 ### مبدأ التناسق المطلق
 - "One seed → one internally-coherent browser identity"
@@ -227,62 +414,126 @@
 - Redmi Note 8T → دقة شاشة وGPU وأنوية متوافقة
 - بصمة TLS Chrome → UA مطابق
 
-### مراحل التهيئة (30-60 ثانية)
+### مراحل التهيئة (30-60 ثانية) - 6 مراحل
 1. توليد البذرة (Seed Generation) - < 1 ثانية
 2. سحب واختبار روابط VLESS - 5-15 ثانية
 3. توليد الملف التعريفي الكامل - < 1 ثانية
-4. اختبار التناسق - 5 ثواني
+4. اختبار التناسق (Consistency Validation) - 5 ثواني
 5. تهيئة محرك التصفح - 10-30 ثانية
-6. إعلام المستخدم - < 1 ثانية
+6. إعلام المستخدم وإتمام التهيئة - < 1 ثانية
+
+### توقيت المكونات
+| المكون | الوقت المقدر | المبرر |
+|---|---|---|
+| سحب قائمة الروابط | 2-5 ثوان | تحميل ملف من GitHub |
+| اختبار صلاحية الروابط | 3-10 ثوان | اختبار اتصال لكل رابط |
+| توليد الملف التعريفي | < 1 ثانية | عمليات حسابية بحتة |
+| اختبار التناسق | 2-5 ثوان | محاكاة اختبارات الكشف |
+| تهيئة المحرك | 10-30 ثانية | تشغيل Xray-core، تهيئة TLS |
+| **المجموع** | **17-51 ثانية** | **في حدود 30-60 ثانية** |
 
 ### PRNG حتمي
 - Mulberry32 أو PCG أو SplitMix64
 - نفس البذرة → نفس البصمة
 
-### الهيكل البياني الحتمي (Deterministic DAG)
+### الهيكل البياني الحتمي (Deterministic DAG) - 48 قاعدة
 ```
-البذرة (Seed)
-    ↓
-نوع الجهاز / نظام التشغيل / إصدار المتصفح
-    ↓
-دقة الشاشة / GPU / عدد الأنوية
+                      ┌─────────────────┐
+                      │   البذرة (Seed)  │
+                      └────────┬────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+              ▼                ▼                ▼
+       ┌───────────┐   ┌───────────┐   ┌───────────┐
+       │  نوع      │   │  نظام     │   │  إصدار    │
+       │  الجهاز   │   │  التشغيل  │   │  المتصفح  │
+       └─────┬─────┘   └─────┬─────┘   └─────┬─────┘
+             │               │               │
+             └───────────────┼───────────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+       ┌───────────┐   ┌───────────┐   ┌───────────┐
+       │  دقة      │   │  GPU      │   │  عدد      │
+       │  الشاشة   │   │           │   │  الأنوية  │
+       └───────────┘   └───────────┘   └───────────┘
 ```
-مبدأ: "Mac UA never lands next to Linux WebGL"
+المبدأ: "Mac UA never lands next to Linux WebGL"
 
-### تناسق الشبكة والموقع
-- IP ← عنوان الوكيل (VLESS)
-- البلد/المنطقة/المدينة ← GeoIP للوكيل
-- المنطقة الزمنية ← مُشتقة من موقع الوكيل
-- اللغة ← مُشتقة من موقع الوكيل
-- ISP ← ASN للوكيل
+### اشتقاق القيم من موقع الوكيل (4.3)
+```cpp
+Timezone DeriveFromProxyIP(ProxyIP ip) {
+    GeoInfo geo = GeoIPDatabase.Lookup(ip);
+    return TimezoneDatabase.GetByCountry(geo.country);
+}
+```
 
-### تناسق TLS
-- اختيار ملف تعريف TLS بناءً على UA
-- uTLS 1.8.1+ (تجنب CVE-2026-27017)
+### تناسق الشبكة والموقع (5.2)
+| الإشارة | المصدر في المتصفح المقترح |
+|---|---|
+| IP (WAN) | عنوان الوكيل (VLESS) |
+| البلد/المنطقة/المدينة | قاعدة بيانات GeoIP للوكيل |
+| خط العرض/الطول | قاعدة بيانات GeoIP للوكيل |
+| المنطقة الزمنية | مُشتقة من موقع الوكيل |
+| اللغة (Accept-Language) | مُشتقة من موقع الوكيل |
+| مزود الخدمة (ISP) | معلومات ASN للوكيل |
+
+### تناسق TLS (6.2)
+```cpp
+TLSProfile GetTLSProfile(UserAgent ua) {
+    if (ua.Browser == "Chrome" && ua.Version == "150") {
+        return TLSProfile::Chrome_150;
+    } else if (ua.Browser == "Firefox" && ua.Version == "130") {
+        return TLSProfile::Firefox_130;
+    }
+}
+```
+- uTLS 1.8.1+ لتجنب CVE-2026-27017
 - تناسق HTTP/2 Settings
 
-### تناسق طبقة التطبيقات
+### تناسق طبقة التطبيقات (7.1-7.2)
 - Canvas/WebGL/AudioContext: ضوضاء حتمية (Deterministic Noise)
 - Fonts/Screen/Navigator: متوافقة مع الملف التعريفي
+```cpp
+ScreenInfo GenerateScreen(DeviceProfile profile, PRNG& rng) {
+    ScreenInfo screen;
+    screen.width = profile.device.common_resolutions[rng.Next() % ...];
+    screen.height = profile.device.common_resolutions[...];
+    screen.pixel_ratio = profile.device.pixel_ratio;
+    screen.color_depth = 24;
+    return screen;
+}
+```
 
-### اختبار التناسق قبل التصفح
-1. اختبار UA/TLS
-2. اختبار UA/WebGL
-3. اختبار الموقع/المنطقة الزمنية
-4. اختبار الجهاز/الشاشة
+### اختبار التناسق قبل التصفح (8.1) - 4 اختبارات
+1. اختبار UA/TLS: التحقق من أن بصمة TLS تتطابق مع وكيل المستخدم
+2. اختبار UA/WebGL: التحقق من أن WebGL GPU يتوافق مع نظام التشغيل
+3. اختبار الموقع/المنطقة الزمنية: التحقق من تطابق المنطقة الزمنية مع موقع الوكيل
+4. اختبار الجهاز/الشاشة: التحقق من أن دقة الشاشة وGPU يتوافقان مع الطراز المزور
 
-### معايير النجاح
-- 0 تناقضات: تصفح فوري
-- 1-2 تناقضات: إعادة توليد
-- >2 تناقضات: إعادة توليد البصمة بالكامل
+### معايير النجاح (8.2)
+- 0 تناقضات: يُسمح بالتصفح فوراً
+- 1-2 تناقضات طفيفة: إعادة توليد القيم غير المتناسقة وإعادة الاختبار
+- أكثر من 2 تناقضات: إعادة توليد البصمة بالكامل من بذرة جديدة
 
-### العمليات بالتوازي
-- سحب الروابط + توليد البصمة بالتوازي لتقليل الوقت
+### التحديات والحلول (9)
+- تغير روابط VLESS بسرعة: سحب القوائم كل 15 دقيقة، وتخزين قائمة احتياطية
+- JA4 يتجاهل ترتيب الإضافات: استخدام تزوير أكثر تعقيداً يشمل تغيير قيم الإضافات نفسها
+- ثغرات في uTLS: استخدام أحدث إصدار (1.8.1+) وتطبيق التصحيحات
+- كشف التناقض بين TLS وUser-Agent: ربط بصمة TLS بوكيل المستخدم المزور نفسه
+- فشل الوكيل أثناء الجلسة: التبديل التلقائي إلى رابط احتياطي مع إعادة اختبار التناسق
+- فترة التهيئة الطويلة: تنفيذ العمليات بالتوازي (سحب الروابط + توليد البصمة)
 
-### تحديات
-- روابط VLESS تتغير بسرعة
-- JA4 يتجاهل ترتيب الإضافات
-- ثغرات uTLS
-- كشف التناقض بين TLS وUA
-- فشل الوكيل أثناء الجلسة
-- فترة التهيئة الطويلة
+### التوصيات النهائية (11.2)
+| التوصية | المستوى |
+|---|---|
+| اعتماد مولد PRNG حتمي (Mulberry32/PCG) لتوليد البصمة | إلزامي |
+| اشتقاق المنطقة الزمنية واللغة من موقع الوكيل | إلزامي |
+| مطابقة بصمة TLS مع وكيل المستخدم عبر uTLS | إلزامي |
+| تنفيذ اختبارات تناسق ذاتية قبل التصفح | إلزامي |
+| تحديث قوائم VLESS كل 15 دقيقة كحد أقصى | موصى به |
+| إبلاغ المستخدم عند اكتمال التهيئة | موصى به |
+
+---
