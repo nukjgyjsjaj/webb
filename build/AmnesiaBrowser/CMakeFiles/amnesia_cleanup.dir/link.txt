@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libamnesia_cleanup.a CMakeFiles/amnesia_cleanup.dir/src/cleanup/cleanup_system.cc.o CMakeFiles/amnesia_cleanup.dir/src/cleanup/crash_handler.cc.o CMakeFiles/amnesia_cleanup.dir/src/cleanup/memory_zeroizer.cc.o
+/usr/bin/ranlib ../lib/libamnesia_cleanup.a

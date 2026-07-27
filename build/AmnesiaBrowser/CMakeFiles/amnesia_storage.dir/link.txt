@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libamnesia_storage.a CMakeFiles/amnesia_storage.dir/src/storage/ephemeral_storage.cc.o CMakeFiles/amnesia_storage.dir/src/storage/encrypted_dir.cc.o
+/usr/bin/ranlib ../lib/libamnesia_storage.a

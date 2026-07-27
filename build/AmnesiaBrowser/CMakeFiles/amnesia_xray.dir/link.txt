@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libamnesia_xray.a CMakeFiles/amnesia_xray.dir/src/xray_integration/xray_client.cc.o CMakeFiles/amnesia_xray.dir/src/xray_integration/socks5_proxy.cc.o CMakeFiles/amnesia_xray.dir/src/xray_integration/proxy_router.cc.o
+/usr/bin/ranlib ../lib/libamnesia_xray.a
