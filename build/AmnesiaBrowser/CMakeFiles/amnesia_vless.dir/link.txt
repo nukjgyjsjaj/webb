@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libamnesia_vless.a CMakeFiles/amnesia_vless.dir/src/vless/vless_manager.cc.o CMakeFiles/amnesia_vless.dir/src/vless/vless_link_parser.cc.o CMakeFiles/amnesia_vless.dir/src/vless/vless_collector.cc.o CMakeFiles/amnesia_vless.dir/src/vless/vless_link_tester.cc.o
+/usr/bin/ranlib ../lib/libamnesia_vless.a

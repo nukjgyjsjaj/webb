@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libamnesia_session.a CMakeFiles/amnesia_session.dir/src/session/session_manager.cc.o CMakeFiles/amnesia_session.dir/src/session/csprng.cc.o
+/usr/bin/ranlib ../lib/libamnesia_session.a
