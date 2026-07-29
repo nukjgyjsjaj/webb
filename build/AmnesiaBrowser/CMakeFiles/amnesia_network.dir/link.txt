@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libamnesia_network.a CMakeFiles/amnesia_network.dir/src/network/webrtc_leak_prevention.cc.o
-/usr/bin/ranlib ../lib/libamnesia_network.a

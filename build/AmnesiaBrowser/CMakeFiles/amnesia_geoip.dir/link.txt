@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libamnesia_geoip.a CMakeFiles/amnesia_geoip.dir/src/geoip/geoip_database.cc.o CMakeFiles/amnesia_geoip.dir/src/geoip/geoip_mmdb.cc.o CMakeFiles/amnesia_geoip.dir/src/geoip/mmdb_reader.cc.o
-/usr/bin/ranlib ../lib/libamnesia_geoip.a

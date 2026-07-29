@@ -1,0 +1,26 @@
+# Android / Gradle
+.gradle/
+build/
+*.apk
+*.aab
+*.keystore
+local.properties
+
+# NDK / CMake
+cpp/build/
+cmake-build-*/
+
+# IDE
+.idea/
+*.iml
+*.swp
+*.swo
+.cxx/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+amnesia-android/local.properties
+amnesia-android/*.iml

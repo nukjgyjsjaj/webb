@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libamnesia_tls.a CMakeFiles/amnesia_tls.dir/src/tls/browser_profiles.cc.o CMakeFiles/amnesia_tls.dir/src/tls/tls_connection.cc.o CMakeFiles/amnesia_tls.dir/src/tls/tls_manager.cc.o
-/usr/bin/ranlib ../lib/libamnesia_tls.a

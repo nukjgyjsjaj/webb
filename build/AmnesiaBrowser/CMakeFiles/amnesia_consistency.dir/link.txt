@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libamnesia_consistency.a CMakeFiles/amnesia_consistency.dir/src/test/consistency/consistency_engine.cc.o CMakeFiles/amnesia_consistency.dir/src/test/consistency/rule_engine.cc.o CMakeFiles/amnesia_consistency.dir/src/test/consistency/consistency_validator.cc.o CMakeFiles/amnesia_consistency.dir/src/test/consistency/creepjs_simulator.cc.o CMakeFiles/amnesia_consistency.dir/src/test/consistency/device_profiles_db.cc.o CMakeFiles/amnesia_consistency.dir/src/test/consistency/browser_profiles_db.cc.o
-/usr/bin/ranlib ../lib/libamnesia_consistency.a
