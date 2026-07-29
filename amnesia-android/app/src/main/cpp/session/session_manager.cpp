@@ -184,36 +184,4 @@ uint64_t SessionManager::GenerateSeed() {
     return dist(gen);
 }
 
-extern "C" {
-
-JNIEXPORT jstring JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeCreateSession(JNIEnv* env, jobject /* this */, jint timeout) {
-    std::string session_id = SessionManager::GetInstance().CreateSession(timeout);
-    return env->NewStringUTF(session_id.c_str());
-}
-
-JNIEXPORT jboolean JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeDestroySession(JNIEnv* env, jobject /* this */, jstring session_id) {
-    const char* chars = env->GetStringUTFChars(session_id, nullptr);
-    bool result = false;
-    if (chars) {
-        result = SessionManager::GetInstance().DestroySession(chars);
-        env->ReleaseStringUTFChars(session_id, chars);
-    }
-    return result;
-}
-
-JNIEXPORT jlong JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeGetSessionSeed(JNIEnv* env, jobject /* this */, jstring session_id) {
-    const char* chars = env->GetStringUTFChars(session_id, nullptr);
-    uint64_t seed = 0;
-    if (chars) {
-        seed = SessionManager::GetInstance().GetSessionSeed(chars);
-        env->ReleaseStringUTFChars(session_id, chars);
-    }
-    return (jlong)seed;
-}
-
-}
-
-}
+}  // namespace amnesia

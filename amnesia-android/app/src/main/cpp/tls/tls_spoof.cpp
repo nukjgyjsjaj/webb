@@ -63,20 +63,4 @@ std::string TLSSpoofEngine::SpoofTLSCipherSuites() {
     return "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384";
 }
 
-extern "C" {
-
-JNIEXPORT jstring JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeGetJA3(JNIEnv* env, jobject /* this */) {
-    std::string ja3 = TLSSpoofEngine::GetInstance().GetJA3Fingerprint();
-    return env->NewStringUTF(ja3.c_str());
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeGetJA4(JNIEnv* env, jobject /* this */) {
-    std::string ja4 = TLSSpoofEngine::GetInstance().GetJA4Fingerprint();
-    return env->NewStringUTF(ja4.c_str());
-}
-
-}
-
-}
+}  // namespace amnesia

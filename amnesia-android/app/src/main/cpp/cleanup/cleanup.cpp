@@ -82,25 +82,4 @@ bool CleanupEngine::SecureWipe(const uint8_t* data, size_t size) {
 void CleanupEngine::RegisterShutdownHook() {
 }
 
-extern "C" {
-
-JNIEXPORT jboolean JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeCleanupSession(JNIEnv* env, jobject /* this */, jstring session_id) {
-    const char* chars = env->GetStringUTFChars(session_id, nullptr);
-    bool result = false;
-    if (chars) {
-        result = CleanupEngine::GetInstance().ClearSessionData(chars);
-        env->ReleaseStringUTFChars(session_id, chars);
-    }
-    return result;
-}
-
-JNIEXPORT jboolean JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeClearCache(JNIEnv* env, jobject /* this */) {
-    (void)env;
-    return CleanupEngine::GetInstance().ClearAllCache();
-}
-
-}
-
-}
+}  // namespace amnesia

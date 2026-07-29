@@ -6,11 +6,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(amnesia_engine LANGUAGES CXX)
 
 add_library(amnesia_engine SHARED
+    ../app/src/main/cpp/core/amnesia_init.cpp
     ../app/src/main/cpp/engine/browser_engine.cpp
-    ../app/src/main/cpp/anti_fp/anti_fingerprint.cpp
-    ../app/src/main/cpp/tls/tls_spoof.cpp
-    ../app/src/main/cpp/proxy/vless_proxy.cpp
     ../app/src/main/cpp/session/session_manager.cpp
+    ../app/src/main/cpp/anti_fp/anti_fingerprint.cpp
+    ../app/src/main/cpp/anti_fp/fingerprint_profile.cpp
+    ../app/src/main/cpp/js_injection/injection_engine.cpp
+    ../app/src/main/cpp/tls/tls_spoof.cpp
+    ../app/src/main/cpp/tls/ja3_config.cpp
+    ../app/src/main/cpp/vless/vless_proxy.cpp
+    ../app/src/main/cpp/vless/inbound_controller.cpp
+    ../app/src/main/cpp/vless/outbound_selector.cpp
+    ../app/src/main/cpp/storage/ephemeral_storage.cpp
+    ../app/src/main/cpp/storage/cookie_manager.cpp
+    ../app/src/main/cpp/cleanup/cleanup_system.cpp
     ../app/src/main/cpp/cleanup/cleanup.cpp
 )
 
