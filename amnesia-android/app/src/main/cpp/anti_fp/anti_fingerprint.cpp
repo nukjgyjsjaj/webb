@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include <vector>
 #include <map>
 #include <random>
 #include <chrono>
@@ -167,6 +168,18 @@ JNIEXPORT void JNICALL
 Java_com_amnesia_browser_AmnesiaEngine_nativeApplySpoofing(JNIEnv* env, jobject /* this */) {
     (void)env;
     AntiFingerprintEngine::GetInstance().ApplySpoofing();
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_amnesia_browser_AmnesiaEngine_nativeSpoofLanguage(JNIEnv* env, jobject /* this */) {
+    std::string lang = AntiFingerprintEngine::GetInstance().SpoofLanguage();
+    return env->NewStringUTF(lang.c_str());
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_amnesia_browser_AmnesiaEngine_nativeSpoofTimezone(JNIEnv* env, jobject /* this */) {
+    std::string tz = AntiFingerprintEngine::GetInstance().SpoofTimezone();
+    return env->NewStringUTF(tz.c_str());
 }
 
 }

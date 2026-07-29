@@ -77,12 +77,6 @@ Java_com_amnesia_browser_AmnesiaEngine_nativeGetJA4(JNIEnv* env, jobject /* this
     return env->NewStringUTF(ja4.c_str());
 }
 
-JNIEXPORT jboolean JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeInitializeTLS(JNIEnv* env, jobject /* this */) {
-    (void)env;
-    return TLSSpoofEngine::GetInstance().Initialize();
-}
-
 }
 
 }

@@ -1,8 +1,11 @@
 #include <jni.h>
 #include <string>
+#include <vector>
+#include <cstdio>
 #include <mutex>
 #include <chrono>
 #include <random>
+#include <algorithm>
 
 namespace amnesia {
 
