@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libamnesia_fingerprint.a CMakeFiles/amnesia_fingerprint.dir/src/fingerprint/fingerprint_generator.cc.o CMakeFiles/amnesia_fingerprint.dir/src/fingerprint/fingerprint.cc.o CMakeFiles/amnesia_fingerprint.dir/src/fingerprint/device_profiles.cc.o
-/usr/bin/ranlib ../lib/libamnesia_fingerprint.a
