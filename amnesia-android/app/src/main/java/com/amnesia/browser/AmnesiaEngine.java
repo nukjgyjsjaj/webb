@@ -9,10 +9,6 @@ public class AmnesiaEngine {
 
     private static final String TAG = "AmnesiaEngine";
     private static boolean initialized = false;
-    private static String spoofedUserAgent = null;
-    private static String spoofedScreenResolution = null;
-    private static String spoofedLanguage = null;
-    private static String spoofedTimezone = null;
     private static ExecutorService executor;
 
     static {
@@ -21,12 +17,10 @@ public class AmnesiaEngine {
 
     public static synchronized boolean initialize(Context context) {
         if (initialized) return true;
-
         try {
             boolean result = nativeInitialize();
             if (result) {
                 initialized = true;
-                applySpoofing();
                 Log.i(TAG, "Amnesia engine initialized successfully");
                 return true;
             }
@@ -67,52 +61,38 @@ public class AmnesiaEngine {
     }
 
     public static String getSpoofedUserAgent() {
-        if (spoofedUserAgent == null) {
-            spoofedUserAgent = nativeSpoofUserAgent();
+        try {
+            return nativeSpoofUserAgent();
+        } catch (Exception e) {
+            Log.e(TAG, "UA error", e);
+            return "";
         }
-        return spoofedUserAgent;
     }
 
     public static String getSpoofedScreenResolution() {
-        if (spoofedScreenResolution == null) {
-            spoofedScreenResolution = nativeSpoofScreenResolution();
+        try {
+            return nativeSpoofScreenResolution();
+        } catch (Exception e) {
+            Log.e(TAG, "Screen error", e);
+            return "";
         }
-        return spoofedScreenResolution;
     }
 
     public static String getSpoofedLanguage() {
-        if (spoofedLanguage == null) {
-            spoofedLanguage = nativeSpoofLanguage();
+        try {
+            return nativeSpoofLanguage();
+        } catch (Exception e) {
+            Log.e(TAG, "Lang error", e);
+            return "";
         }
-        return spoofedLanguage;
     }
 
     public static String getSpoofedTimezone() {
-        if (spoofedTimezone == null) {
-            spoofedTimezone = nativeSpoofTimezone();
-        }
-        return spoofedTimezone;
-    }
-
-    public static void reinitializeWithNewProfile() {
-        if (!initialized) return;
         try {
-            applySpoofing();
-            Log.i(TAG, "Profile reinitialized with new spoofing values");
+            return nativeSpoofTimezone();
         } catch (Exception e) {
-            Log.e(TAG, "Reinit error", e);
-        }
-    }
-
-    public static void applySpoofing() {
-        try {
-            nativeApplySpoofing();
-            spoofedUserAgent = nativeSpoofUserAgent();
-            spoofedScreenResolution = nativeSpoofScreenResolution();
-            spoofedLanguage = nativeSpoofLanguage();
-            spoofedTimezone = nativeSpoofTimezone();
-        } catch (Exception e) {
-            Log.e(TAG, "Spoofing error", e);
+            Log.e(TAG, "TZ error", e);
+            return "";
         }
     }
 
@@ -214,6 +194,26 @@ public class AmnesiaEngine {
         }
     }
 
+    public static String getProfileJson() {
+        if (!initialized) return "{}";
+        try {
+            return nativeGetProfileJson();
+        } catch (Exception e) {
+            Log.e(TAG, "Get profile error", e);
+            return "{}";
+        }
+    }
+
+    public static String getSessionId() {
+        if (!initialized) return "";
+        try {
+            return nativeGetSessionId();
+        } catch (Exception e) {
+            Log.e(TAG, "Get session error", e);
+            return "";
+        }
+    }
+
     public static boolean isInitialized() {
         return initialized;
     }
@@ -237,4 +237,6 @@ public class AmnesiaEngine {
     private native long nativeGetSessionSeed(String sessionId);
     private native boolean nativeCleanupSession(String sessionId);
     private native boolean nativeClearCache();
+    private native String nativeGetProfileJson();
+    private native String nativeGetSessionId();
 }

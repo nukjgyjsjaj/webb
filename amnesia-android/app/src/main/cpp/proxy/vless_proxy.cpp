@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <mutex>
 #include <chrono>
 #include <random>
@@ -161,31 +162,4 @@ bool VlessProxyEngine::ValidateLink(const VlessLink& link) {
     return true;
 }
 
-extern "C" {
-
-JNIEXPORT jboolean JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeAddVlessLink(JNIEnv* env, jobject /* this */, jstring link) {
-    const char* chars = env->GetStringUTFChars(link, nullptr);
-    bool result = false;
-    if (chars) {
-        result = VlessProxyEngine::GetInstance().AddVlessLink(chars);
-        env->ReleaseStringUTFChars(link, chars);
-    }
-    return result;
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeGetActiveLink(JNIEnv* env, jobject /* this */) {
-    std::string active = VlessProxyEngine::GetInstance().GetActiveLink();
-    return env->NewStringUTF(active.c_str());
-}
-
-JNIEXPORT jboolean JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeRotateLink(JNIEnv* env, jobject /* this */) {
-    (void)env;
-    return VlessProxyEngine::GetInstance().RotateLink();
-}
-
-}
-
-}
+}  // namespace amnesia

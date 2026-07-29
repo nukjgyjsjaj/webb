@@ -80,23 +80,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         AmnesiaEngine.reinitializeWithNewProfile();
     }
 
-    private void initializeEngine() {
-        new Thread(() -> {
-            boolean success = AmnesiaEngine.initialize(getApplicationContext());
-            runOnUiThread(() -> {
-                if (success) {
-                    isInitialized = true;
-                    Log.i(TAG, "Engine initialized successfully");
-                    String defaultUrl = getString(R.string.default_url);
-                    urlInput.setText(defaultUrl);
-                    webView.loadUrlSafe(defaultUrl);
-                } else {
-                    Log.e(TAG, "Engine initialization failed");
-                }
-            });
-        }).start();
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
@@ -125,3 +108,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
     }
 }
+            });
+        }).start();
+    }

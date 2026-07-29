@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include <vector>
 #include <map>
 #include <random>
 #include <chrono>
@@ -149,26 +150,4 @@ std::string AntiFingerprintEngine::SelectRandomFromList(const std::vector<std::s
     return list[dist(local_rng) % list.size()];
 }
 
-extern "C" {
-
-JNIEXPORT jstring JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeSpoofUserAgent(JNIEnv* env, jobject /* this */) {
-    std::string ua = AntiFingerprintEngine::GetInstance().SpoofUserAgent();
-    return env->NewStringUTF(ua.c_str());
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeSpoofScreenResolution(JNIEnv* env, jobject /* this */) {
-    std::string res = AntiFingerprintEngine::GetInstance().SpoofScreenResolution();
-    return env->NewStringUTF(res.c_str());
-}
-
-JNIEXPORT void JNICALL
-Java_com_amnesia_browser_AmnesiaEngine_nativeApplySpoofing(JNIEnv* env, jobject /* this */) {
-    (void)env;
-    AntiFingerprintEngine::GetInstance().ApplySpoofing();
-}
-
-}
-
-}
+}  // namespace amnesia
