@@ -1,0 +1,9 @@
+[package]
+name = "verification"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+math-layer = { path = "../math-layer" }
+data-layer = { path = "../data-layer" }
+execution-layer = { path = "../execution-layer" }

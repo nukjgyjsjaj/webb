@@ -1,0 +1,5 @@
+rpc_url = "https://api.mainnet-beta.solana.com"
+ws_url = "wss://api.mainnet-beta.solana.com"
+keypair_path = "./keypair.json"
+gamma = 0.99
+min_tip_lamports = 10000

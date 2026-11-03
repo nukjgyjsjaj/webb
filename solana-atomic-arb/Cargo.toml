@@ -1,0 +1,3 @@
+[workspace]
+resolver = "2"
+members = ["crates/math-layer", "crates/data-layer", "crates/search-layer", "crates/config", "crates/execution-layer", "crates/verification"]
